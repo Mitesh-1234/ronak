@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Celebration | Ronak & Natasha</title>
+    <link rel="icon" type="image/jpeg" href="images/welcome.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        // TODO: Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOnd3gp0fSkRBlBBg04FDwOn-a1IVwj0g",
+            authDomain: "ronak-s-wedding.firebaseapp.com",
+            projectId: "ronak-s-wedding",
+            storageBucket: "ronak-s-wedding.firebasestorage.app",
+            messagingSenderId: "902091649633",
+            appId: "1:902091649633:web:d4acc3d736d4174ddff020",
+            measurementId: "G-J4VDQL8F51"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expose db to window so other scripts can access it if needed
+        window.db = db;
+        window.firebaseImports = { collection, addDoc, getDoc, doc, onSnapshot };
+    </script>
+    <link rel="stylesheet" href="css/travel.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="index.html" class="logo">Ronak & Natasha</a>
+                <button class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html#our-story">Our Story</a></li>
+                    <li><a href="index.html#event-schedule">Event Schedule</a></li>
+                    <li><a href="#">Travel & Stay</a></li>
+                    <li><a href="index.html#rsvp">RSVP</a></li>
+                    <li><a href="index.html#gallery">Gallery</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main style="min-height: 70vh;">
+        <!-- Travel Hero Section -->
+        <section class="travel-hero">
+            <div class="travel-hero-bg" id="travelParallaxBg"></div>
+            <div class="travel-hero-overlay"></div>
+            <div class="container">
+                <h1>Welcome to New York</h1>
+                <p>We're thrilled you're making the trip to celebrate with us. We've compiled some helpful information
+                    to make your stay comfortable and fun.</p>
+                <div style="margin-top: 30px; animation: fadeInUp 1s ease 0.6s forwards; opacity: 0;">
+                    <a href="my-booking.html" class="btn-small"
+                        style="background: transparent; border: 2px solid white; color: white; display: inline-block;">Find
+                        My Booking</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Travel & Accommodation -->
+        <section id="travel" class="travel" style="padding-top: 60px;">
+            <div class="container">
+                <div class="fade-in-up">
+                    <h2 class="section-title">Where to Stay</h2>
+                    <p
+                        style="text-align: center; margin-bottom: 50px; font-size: 1.1rem; color: #666; max-width: 700px; margin-left: auto; margin-right: auto;">
+                        We have arranged special room blocks for our guests at these wonderful hotels. Please book early
+                        to ensure availability.
+                    </p>
+                </div>
+
+                <div class="travel-grid">
+                    <!-- Hotel 1 -->
+                    <div class="travel-card fade-in-up" style="transition-delay: 0.1s;">
+                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            alt="The Grand Hotel" class="hotel-image">
+                        <div class="hotel-stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                        <h3>The Grand Plaza</h3>
+                        <p><strong>Distance to Venue:</strong> 0.5 miles</p>
+                        <p>Our premier luxury option in the heart of the city. We have reserved a block of rooms at a
+                            discounted rate.</p>
+                        <br>
+                        <p>Enjoy luxury amenities including a spa, rooftop pool, and complimentary breakfast buffet.</p>
+                        <p>Use code <strong>RONAKNATASHA26</strong></p>
+                        <div style="flex-grow: 1;"></div>
+                        <a href="booking.html" class="btn-small" style="margin-top: 20px;">Book a Room</a>
+                    </div>
+
+                    <!-- Places to Visit -->
+                    <div class="travel-card fade-in-up" style="transition-delay: 0.2s;">
+                        <img src="https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            alt="Places to Visit" class="hotel-image">
+                        <div class="travel-icon" style="margin-bottom: 15px;"><i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <h3>Places to Visit</h3>
+                        <p>New York City has so much to offer! Make the most of your weekend by checking out some of our
+                            favorite spots.</p>
+                        <br>
+                        <p>From iconic landmarks to hidden gems in our neighborhood, we've curated a list of must-see
+                            destinations.</p>
+                        <div style="flex-grow: 1;"></div>
+                        <a href="#"
+                            onclick="document.querySelector('.activities-grid').scrollIntoView({behavior: 'smooth'}); return false;"
+                            class="btn-small" style="margin-top: 20px;">Explore Guide</a>
+                    </div>
+
+                    <!-- Travel Info -->
+                    <div class="travel-card fade-in-up" style="transition-delay: 0.3s;">
+                        <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                            alt="Getting Here" class="hotel-image">
+                        <div class="travel-icon" style="margin-bottom: 20px;"><i class="fas fa-plane-arrival"></i></div>
+                        <h3>Getting Here</h3>
+                        <p><strong>JFK International Airport (JFK)</strong><br>15 miles from hotels</p>
+                        <p><strong>LaGuardia Airport (LGA)</strong><br>10 miles from hotels</p>
+                        <hr style="border: 0; height: 1px; background: #eee; margin: 15px 0;">
+                        <h4
+                            style="font-family: 'Montserrat', sans-serif; font-size: 1rem; color: var(--dark); margin-bottom: 5px;">
+                            <i class="fas fa-car" style="color: var(--primary); margin-right: 5px;"></i> Ground
+                            Transport
+                        </h4>
+                        <p>Uber, Lyft, and yellow cabs are readily available from both airports. Estimated travel time
+                            is 45-60 minutes depending on traffic.</p>
+                        <div style="flex-grow: 1;"></div>
+                    </div>
+                </div>
+
+                <!-- Venues & Maps Section -->
+                <div class="fade-in-up" style="margin-top: 100px;">
+                    <h2 class="section-title">The Venues</h2>
+                    <p style="text-align: center; font-size: 1.1rem; color: #666; max-width: 700px; margin: 0 auto;">
+                        All official wedding events taking place on Day 1 and Day 2 will be held at this breathtaking
+                        location.
+                        A shuttle service will be provided from the designated hotels.
+                    </p>
+                    <div class="map-container">
+                        <!-- Embedded Google Map -->
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830869428!2d-74.119763973046!3d40.69766374874431!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY!5e0!3m2!1sen!2sus!4v1683141011681!5m2!1sen!2sus"
+                            allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <!-- Overlay Info -->
+                        <div class="map-overlay">
+                            <h3>Rose Garden & Grand Ballroom</h3>
+                            <p><strong>Address:</strong><br>123 Wedding Lane<br>New York, NY 10001</p>
+                            <p style="margin-top: 10px;"><strong>Parking:</strong><br>Complimentary valet parking is
+                                available at the main entrance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Things to Do Section -->
+                <div class="fade-in-up" style="margin-top: 100px;">
+                    <h2 class="section-title">Make a Weekend of It</h2>
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 1.1rem; color: #666;">
+                        Arriving early or staying late? Here are a few of our favorite spots to explore in the city.
+                    </p>
+
+                    <div class="activities-grid">
+                        <div class="gallery-item fade-in-up" style="aspect-ratio: 4/3; margin-top: 0;">
+                            <img src="https://image2url.com/r2/default/images/1772357888133-5618fce8-626f-41c4-9914-a79e562f4884.blob"
+                                alt="Central Park">
+                            <div class="gallery-overlay">
+                                <div class="gallery-title">Central Park Strolls</div>
+                                <div class="gallery-description">Rent a bike or take a romantic carriage ride through
+                                    the park.</div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item fade-in-up"
+                            style="aspect-ratio: 4/3; margin-top: 0; transition-delay: 0.1s;">
+                            <img src="https://image2url.com/r2/default/images/1772358300974-ce572924-f9ca-4707-9d3c-0314de5dc1f6.blob"
+                                alt="Joe Coffee">
+                            <div class="gallery-overlay">
+                                <div class="gallery-title">Joe Coffee Boutique</div>
+                                <div class="gallery-description">Our weekend go-to spot. Try the honey lavender latte!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gallery-item fade-in-up"
+                            style="aspect-ratio: 4/3; margin-top: 0; transition-delay: 0.2s;">
+                            <img src="https://image2url.com/r2/default/images/1772358370523-2f10a9d2-736c-496a-ad0a-13f6ae50f218.blob"
+                                alt="Art Museum">
+                            <div class="gallery-overlay">
+                                <div class="gallery-title">The Metropolitan Museum</div>
+                                <div class="gallery-description">Spend an afternoon getting lost in world-class art and
+                                    history.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Wedding Lane, New York, NY 10001</li>
+                        <li><i class="fas fa-phone"></i> 8200820957</li>
+                        <li><i class="fas fa-envelope"></i> RonakandNatasha2026@example.com</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="contact-info">
+                        <li><a href="index.html#our-story" style="color: white; text-decoration: none;">Our Story</a>
+                        </li>
+                        <li><a href="index.html#event-schedule" style="color: white; text-decoration: none;">Event
+                                Schedule</a>
+                        </li>
+                        <li><a href="#" style="color: white; text-decoration: none;">Travel & Stay</a></li>
+                        <li><a href="index.html#rsvp" style="color: white; text-decoration: none;">RSVP</a></li>
+                        <li><a href="index.html#gallery" style="color: white; text-decoration: none;">Gallery</a></li>
+                        <li><a href="admin.html" target="_blank" id="admin-link"
+                                style="color: white; text-decoration: none;">Admin</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p> 2026 Ronak & Natasha's Wedding</p>
+            </div>
+        </div>
+    </footer>
+    <script src="js/travel.js"></script>
+</body>
+</html>

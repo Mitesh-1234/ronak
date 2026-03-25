@@ -1,0 +1,19 @@
+# Environment variables (contains secret Firebase keys - NEVER push this)
+.env
+
+# Node dependencies (auto-installed via npm install)
+node_modules/
+
+# Logs
+*.log
+server_log.txt
+
+# VS Code settings
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+.vercel
+.env*.local

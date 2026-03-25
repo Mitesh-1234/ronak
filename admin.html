@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Wedding Management</title>
+    <link rel="icon" type="image/jpeg" href="images/welcome.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, getDoc, setDoc, doc, onSnapshot, query, orderBy, updateDoc, where, deleteDoc } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        // TODO: Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOnd3gp0fSkRBlBBg04FDwOn-a1IVwjOg",
+            authDomain: "ronak-s-wedding.firebaseapp.com",
+            projectId: "ronak-s-wedding",
+            storageBucket: "ronak-s-wedding.firebasestorage.app",
+            messagingSenderId: "902091649633",
+            appId: "1:902091649633:web:d4acc3d736d4174ddff020",
+            measurementId: "G-J4VDQL8F51"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const mAuth = getAuth(app);
+
+        // Expose db to window so other scripts can access it if needed
+        window.db = db;
+        window.firebaseImports = {
+            firebaseConfig, initializeApp, getAuth, collection, addDoc, getDocs, getDoc, setDoc, doc, onSnapshot, query, orderBy, updateDoc, where, deleteDoc,
+            auth: mAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword
+        };
+    </script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("utqDsBsjZjPnP01Ra");
+        })();
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <!-- Toast Notification Container -->
+    <div id="toast-container"></div>
+
+    <!-- Real-time Connection Indicator -->
+    <div class="realtime-indicator" id="realtimeIndicator">🟢 Live</div>
+
+    <!-- Initial Loading Screen -->
+    <div id="initialLoader"
+        style="display: flex; justify-content: center; align-items: center; height: 100dvh; font-size: 1.2rem; color: var(--primary);">
+        <i class="fas fa-spinner fa-spin" style="margin-right: 10px;"></i> Loading Admin Panel...
+    </div>
+
+    <!-- Login Section -->
+    <div class="login-container" id="loginSection" style="display: none;">
+        <h2>Admin Login</h2>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+    </div>
+
+    <!-- Removed staff login section entirely since we use real Auth now -->
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard">
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button class="hamburger" id="hamburger">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h2>Admin Panel</h2>
+        </div>
+
+        <!-- Overlay for mobile menu -->
+        <div class="overlay" id="overlay"></div>
+
+        <div class="admin-container">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h1>Admin Panel</h1>
+                    <div
+                        style="font-size: 0.85rem; color: #666; margin-top: 5px; margin-bottom: 15px; text-align: center; background: #f0f0f0; padding: 5px; border-radius: 5px;">
+                        Logged in as: <strong id="sidebarStaffNameDisplay" style="color: var(--primary);"></strong>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-number" id="totalGuests">0</span>
+                            <span class="stat-label">Total RSVPs</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="attendingGuests">0</span>
+                            <span class="stat-label">Attending</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="notAttendingGuests">0</span>
+                            <span class="stat-label">Not Attending</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day1Guests">0</span>
+                            <span class="stat-label">Day 1 Checked In</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day2Guests">0</span>
+                            <span class="stat-label">Day 2 Checked In</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day3Guests">0</span>
+                            <span class="stat-label">Day 3 Checked In</span>
+                        </div>
+                    </div>
+                </div>
+
+                <ul class="nav-links">
+                    <li id="nav-scanner"><a href="#" data-tab="scanner"><i class="fas fa-qrcode"></i> QR Scanner</a>
+                    </li>
+                    <li id="nav-guests"><a href="#" data-tab="guests"><i class="fas fa-users"></i> Guest List</a></li>
+                    <li id="nav-attendance"><a href="#" data-tab="attendance"><i class="fas fa-clipboard-check"></i>
+                            Attendance</a></li>
+                    <li id="nav-reports"><a href="#" data-tab="reports"><i class="fas fa-chart-bar"></i> Reports</a>
+                    </li>
+                    <li id="nav-settings" style="display: none;"><a href="#" data-tab="settings"><i
+                                class="fas fa-cog"></i> Settings</a></li>
+                    <li id="nav-bookings" style="display: none;"><a href="#" data-tab="bookings"><i
+                                class="fas fa-hotel"></i> Hotel Bookings</a></li>
+                    <li id="nav-logs" style="display: none;"><a href="#" data-tab="logs"><i
+                                class="fas fa-shield-alt"></i> Activity Logs</a></li>
+                    <li class="logout-sidebar">
+                        <a href="#" onclick="logout()" style="background: var(--danger); margin-top: 5px;">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Scanner Tab -->
+                <div class="content-section" id="scanner">
+                    <div class="header">
+                        <h2>QR Code Scanner</h2>
+                    </div>
+
+                    <!-- Day Selection -->
+                    <div class="day-selector">
+                        <div class="day-option selected" data-day="day1">
+                            <input type="radio" name="scanDay" id="day1-radio" value="day1" checked>
+                            <label for="day1-radio">Day 1 - Welcome Dinner</label>
+                        </div>
+                        <div class="day-option" data-day="day2">
+                            <input type="radio" name="scanDay" id="day2-radio" value="day2">
+                            <label for="day2-radio">Day 2 - Wedding Day</label>
+                        </div>
+                        <div class="day-option" data-day="day3">
+                            <input type="radio" name="scanDay" id="day3-radio" value="day3">
+                            <label for="day3-radio">Day 3 - Farewell Brunch</label>
+                        </div>
+                    </div>
+
+                    <div class="current-day-display" id="currentDayDisplay">
+                        Currently Scanning: Day 1 - Welcome Dinner
+                    </div>
+
+                    <!-- Cooldown Indicator -->
+                    <div class="cooldown-indicator" id="cooldownIndicator">
+                        ⏳ Scanner cooldown: <span id="cooldownTimer">3</span>s
+                    </div>
+
+                    <div class="scanner-container">
+                        <div id="scanner-area" style="position: relative;">
+                            <video id="qr-video" width="400" height="300" style="border: 1px solid #ccc;"></video>
+                            <canvas id="qr-canvas" style="display: none;"></canvas>
+                            <div id="scanner-overlay"
+                                style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                            </div>
+                        </div>
+
+                        <!-- Scanner Results -->
+                        <div class="scanner-result scanner-success" id="scannerSuccess">
+                            <h3>✓ Check-in Successful</h3>
+                            <p id="successInfo"></p>
+                        </div>
+
+                        <div class="scanner-result scanner-warning" id="scannerWarning">
+                            <h3>⚠ Already Checked In</h3>
+                            <p id="warningInfo"></p>
+                        </div>
+
+                        <div class="scanner-result scanner-danger" id="scannerError">
+                            <h3>❌ Error</h3>
+                            <p id="errorInfo"></p>
+                        </div>
+
+                        <div class="scanner-result scanner-warning" id="scannerAlert">
+                            <h3>⚠ Alert</h3>
+                            <p id="alertInfo"></p>
+                        </div>
+                    </div>
+
+                    <div class="scanner-controls">
+                        <button class="btn" onclick="initScanner()">Start Scanner</button>
+                        <button class="btn" onclick="stopScanner()" style="background-color: var(--danger);">Stop
+                            Scanner</button>
+                    </div>
+
+                    <!-- ===== MANUAL CHECK-IN FALLBACK ===== -->
+                    <div id="manualCheckinPanel"
+                        style="margin-top: 30px; padding: 25px; background: linear-gradient(135deg, #fff8e1, #fff3cd); border-radius: 14px; border: 2px dashed var(--primary); box-shadow: 0 4px 20px rgba(212,175,55,0.15);">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px;">
+                            <span style="font-size: 1.8rem;">🔍</span>
+                            <div>
+                                <h3 style="margin: 0; color: var(--dark); font-size: 1.15rem;">Manual Check-In</h3>
+                                <p style="margin: 3px 0 0; font-size: 0.85rem; color: #666;">QR code not working? Search
+                                    guest by name below.</p>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                            <div style="position: relative; flex: 1; min-width: 200px;">
+                                <input type="text" id="manualSearchInput" placeholder="Type guest name to search..."
+                                    style="width: 100%; padding: 12px 40px 12px 15px; border: 2px solid var(--primary); border-radius: 25px; font-size: 1rem; background: white; box-sizing: border-box; outline: none;"
+                                    oninput="searchGuestsForManualCheckin()" />
+                                <i class="fas fa-search"
+                                    style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+                            </div>
+                            <button onclick="clearManualSearch()"
+                                style="background: #6c757d; color: white; border: none; padding: 12px 20px; border-radius: 25px; cursor: pointer; font-size: 0.9rem; white-space: nowrap;">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                        </div>
+
+                        <div id="manualCheckinResults" style="display: none;">
+                            <!-- Results rendered here -->
+                        </div>
+
+                        <div id="manualCheckinStatus"
+                            style="display: none; margin-top: 15px; padding: 12px 18px; border-radius: 8px; font-weight: 600; font-size: 0.95rem;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guest List Tab -->
+                <div class="content-section" id="guests">
+                    <div class="header">
+                        <h2>Guest List</h2>
+                        <div class="filter-buttons">
+                            <button class="btn filter-btn active" onclick="filterGuests('all')" id="filterAll"
+                                style="background-color: var(--primary);">All RSVPs</button>
+                            <button class="btn filter-btn" onclick="filterGuests('attending')" id="filterAttending"
+                                style="background-color: var(--success);">Attending</button>
+                            <button class="btn filter-btn" onclick="filterGuests('not-attending')"
+                                id="filterNotAttending" style="background-color: var(--danger);">Not Attending</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="search-container">
+                        <div class="search-box">
+                            <input type="text" class="search-input" id="guestSearch"
+                                placeholder="Search by name, email, or RSVP ID...">
+                            <i class="fas fa-search search-icon"></i>
+                        </div>
+                        <button class="btn" onclick="clearSearch()"
+                            style="background-color: #6c757d; width: auto;">Clear</button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        Showing all guests
+                    </div>
+
+                    <button class="btn export-btn" onclick="exportGuests()">Export to CSV</button>
+                    <div class="table-container">
+                        <table id="guestsTable">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Phone</th>
+                                    <th>Attendance</th>
+                                    <th>Days Attending</th>
+                                    <th>Additional Guests</th>
+                                    <th>Message</th>
+                                    <th>Day 1 Checked</th>
+                                    <th>Day 2 Checked</th>
+                                    <th>Day 3 Checked</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="guestsTableBody">
+                                <!-- Guest data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Not Attending Section -->
+                    <div class="not-attending-section">
+                        <h3>Guests Not Attending</h3>
+                        <div class="table-container">
+                            <table id="notAttendingTable">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Message</th>
+                                        <th>RSVP Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="notAttendingTableBody">
+                                    <!-- Not attending guest data will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Email Functionality -->
+                    <div class="email-section">
+                        <div class="email-controls">
+                            <button class="btn email-btn" onclick="sendQRCodeToAllGuests()">
+                                <i class="fas fa-envelope"></i> Send QR Codes to All Guests
+                            </button>
+                            <button class="btn email-btn" onclick="sendQRCodeToUnsentGuests()">
+                                <i class="fas fa-paper-plane"></i> Send to Unsent Guests
+                            </button>
+                            <button class="btn email-btn" onclick="testEmailSetup()" style="background-color: #8b7355;">
+                                <i class="fas fa-vial"></i> Test Email Setup
+                            </button>
+                            <button class="btn email-btn" onclick="debugGuestEmails()"
+                                style="background-color: #6c757d;">
+                                <i class="fas fa-bug"></i> Debug Emails
+                            </button>
+                        </div>
+
+                        <div class="email-status email-loading" id="emailLoading">
+                            <i class="fas fa-spinner fa-spin"></i> <span>Sending emails...</span>
+                        </div>
+
+                        <div class="email-status email-success" id="emailSuccess">
+                            <i class="fas fa-check"></i> <span id="emailSuccessText"></span>
+                        </div>
+
+                        <div class="email-status email-error" id="emailError">
+                            <i class="fas fa-exclamation-triangle"></i> <span id="emailErrorText"></span>
+                        </div>
+                    </div>
+
+                    <!-- QR Code Preview Modal -->
+                    <div class="qr-preview" id="qrPreview" style="display: none;">
+                        <h4>QR Code Preview</h4>
+                        <div id="previewQrCode"></div>
+                        <p><strong>Guest ID:</strong> <span id="previewGuestId"></span></p>
+                        <button class="btn" onclick="closeQRPreview()"
+                            style="background-color: var(--secondary);">Close</button>
+                    </div>
+                </div>
+
+                <!-- Attendance Tab -->
+                <div class="content-section" id="attendance">
+                    <div class="header">
+                        <h2>Attendance Records</h2>
+                    </div>
+                    <button class="btn export-btn" onclick="exportAttendance()">Export to CSV</button>
+                    <div class="table-container">
+                        <table id="attendanceTable">
+                            <thead>
+                                <tr>
+                                    <th>Guest Name</th>
+                                    <th>RSVP ID</th>
+                                    <th>Event Day</th>
+                                    <th>Check-in Time</th>
+                                    <th>Staff Member</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <!-- Attendance data will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div class="content-section" id="reports">
+                    <div class="header">
+                        <h2>Reports & Analytics</h2>
+                    </div>
+                    <div class="stats-grid"
+                        style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 30px;">
+                        <div class="stat-card">
+                            <span class="stat-number" id="totalCheckedIn">0</span>
+                            <span class="stat-label">Total Check-ins</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day1CheckedIn">0</span>
+                            <span class="stat-label">Day 1 Check-ins</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day2CheckedIn">0</span>
+                            <span class="stat-label">Day 2 Check-ins</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-number" id="day3CheckedIn">0</span>
+                            <span class="stat-label">Day 3 Check-ins</span>
+                        </div>
+                    </div>
+
+                    <!-- Catering Headcount Section -->
+                    <h3 style="margin-top: 40px;">Catering Headcount</h3>
+                    <div class="catering-stats">
+                        <div class="catering-card">
+                            <span class="catering-number" id="cateringDay1Total">0</span>
+                            <span class="catering-label">Day 1 - Welcome Dinner</span>
+                            <div class="catering-breakdown">
+                                <span id="cateringDay1Breakdown">0 primary + 0 additional</span>
+                            </div>
+                        </div>
+                        <div class="catering-card">
+                            <span class="catering-number" id="cateringDay2Total">0</span>
+                            <span class="catering-label">Day 2 - Wedding Day</span>
+                            <div class="catering-breakdown">
+                                <span id="cateringDay2Breakdown">0 primary + 0 additional</span>
+                            </div>
+                        </div>
+                        <div class="catering-card">
+                            <span class="catering-number" id="cateringDay3Total">0</span>
+                            <span class="catering-label">Day 3 - Farewell Brunch</span>
+                            <div class="catering-breakdown">
+                                <span id="cateringDay3Breakdown">0 primary + 0 additional</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn export-btn" onclick="exportCateringData()" style="margin-top: 20px;">
+                        <i class="fas fa-download"></i> Export Catering Headcount
+                    </button>
+
+                    <h3>Attendance by Day</h3>
+                    <div style="background: white; padding: 20px; border-radius: 10px;">
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <canvas id="attendanceChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">RSVP Overview</h3>
+                    <div style="background: white; padding: 20px; border-radius: 10px;">
+                        <div style="max-width: 400px; margin: 0 auto;">
+                            <canvas id="rsvpChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="content-section" id="settings">
+                    <div class="header">
+                        <h2>System Settings</h2>
+                    </div>
+
+                    <!-- RSVP Control Section -->
+                    <div class="rsvp-control-section">
+                        <h3>RSVP System Control</h3>
+                        <p>Enable or disable the RSVP system on the main website. When disabled, guests will see a
+                            message instead of the RSVP form.</p>
+
+                        <div class="rsvp-status">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="rsvpToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span id="rsvpStatusText" class="rsvp-status-badge rsvp-active">RSVP System: ACTIVE</span>
+                        </div>
+
+                        <div class="custom-message-section">
+                            <h4>Custom Message (When RSVP is disabled)</h4>
+                            <textarea id="rsvpDisabledMessage"
+                                placeholder="Enter a custom message to show when RSVP is disabled...">Thank you for your interest! The RSVP period has now closed. If you have any questions, please contact us directly.</textarea>
+                            <button class="btn" onclick="saveRSVPSettings()" style="margin-top: 10px; width: auto;">
+                                <i class="fas fa-save"></i> Save RSVP Settings
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Current Status Display -->
+                    <div style="background: #e8f4fd; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <h4>Current RSVP Status</h4>
+                        <p><strong>Website Status:</strong> <span id="currentStatusDisplay">Active - Guests can submit
+                                RSVPs</span></p>
+                        <p><strong>Message Preview:</strong> <span id="messagePreview">Thank you for your interest! The
+                                RSVP period has now closed. If you have any questions, please contact us
+                                directly.</span></p>
+                    </div>
+                </div>
+
+                <!-- Hotel Bookings Tab -->
+                <div class="content-section" id="bookings">
+                    <div class="header" style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2>Hotel Bookings</h2>
+                        <div class="header-actions">
+                            <span
+                                style="font-size:1.2rem; font-weight:bold; color:var(--primary); margin-right: 20px;">Total
+                                Reservations: <span id="totalBookingsStat">0</span></span>
+                            <button class="btn" onclick="exportHotelBookings()">
+                                <i class="fas fa-download"></i> Export Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ref ID</th>
+                                    <th>Guest & Members</th>
+                                    <th>Email / Phone</th>
+                                    <th>Check-In</th>
+                                    <th>Check-Out</th>
+                                    <th>Nights</th>
+                                    <th>Booked On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hotelBookingsTableBody">
+                                <!-- Bookings will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activity Logs Tab -->
+                <div class="content-section" id="logs">
+                    <div class="header">
+                        <h2>Admin Activity Logs</h2>
+                    </div>
+
+                    <!-- Step 1: PIN Verification -->
+                    <div id="pinVerificationArea"
+                        style="text-align:center; padding: 40px; background: #e8f4fd; border-radius: 10px; margin-top: 20px; border-left: 4px solid var(--primary);">
+                        <h3>🔒 Security Verification</h3>
+                        <p style="margin-bottom: 20px; color: #555;">Please enter the Master Admin PIN to view activity
+                            logs.</p>
+                        <input type="password" id="masterPinInput" placeholder="••••"
+                            style="font-size: 24px; padding: 10px; width: 150px; text-align: center; letter-spacing: 5px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 20px;">
+                        <br>
+                        <button class="btn" onclick="verifyMasterPin()" style="width: auto; padding: 10px 30px;">Verify
+                            PIN</button>
+                    </div>
+
+                    <!-- Step 2: OTP Verification -->
+                    <div id="otpVerificationArea"
+                        style="display:none; text-align:center; padding: 40px; background: #fff3cd; border-radius: 10px; margin-top: 20px; border-left: 4px solid var(--warning);">
+                        <h3>📧 Email Verification Sent</h3>
+                        <p style="margin-bottom: 20px; color: #555;">A 6-digit code has been sent to the Master Email
+                            Address.</p>
+                        <input type="text" id="masterOtpInput" placeholder="123456"
+                            style="font-size: 24px; padding: 10px; width: 200px; text-align: center; letter-spacing: 5px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 20px;">
+                        <br>
+                        <button class="btn" onclick="verifyMasterOTP()" style="width: auto; padding: 10px 30px;">Verify
+                            OTP</button>
+                    </div>
+
+                    <!-- Logs Table Data -->
+                    <div id="logsDataArea" style="display:none;">
+                        <button class="btn export-btn"
+                            onclick="sessionStorage.removeItem('master_unlocked'); if(typeof activityLogsUnsubscribe === 'function') activityLogsUnsubscribe(); document.getElementById('logsDataArea').style.display='none'; document.getElementById('pinVerificationArea').style.display='block'; document.getElementById('masterPinInput').value=''; document.getElementById('masterOtpInput').value='';"
+                            style="background:var(--danger); width:auto; margin-top:10px;"><i class="fas fa-lock"></i>
+                            Re-Lock Session</button>
+
+                        <!-- Staff Management -->
+                        <div
+                            style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-top: 20px; margin-bottom: 20px; border-left: 4px solid var(--primary);">
+                            <h3 style="margin-bottom: 10px;">👥 Staff Management</h3>
+                            <p style="margin-bottom: 15px;">Create accounts for your staff members. When they log in
+                                with their email and password below, they will be securely verified by Firebase.</p>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                                <input type="text" id="newStaffName" placeholder="Staff Name"
+                                    style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 150px;">
+                                <input type="email" id="newStaffEmail" placeholder="Staff Email Address"
+                                    style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 150px;">
+                                <input type="password" id="newStaffPassword" placeholder="Secure Password"
+                                    style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 120px;">
+                                <button class="btn" onclick="saveNewStaff()"
+                                    style="flex: 1; min-width: 120px; white-space: nowrap;">Add Staff</button>
+                            </div>
+                            <div
+                                style="margin-bottom: 15px; background: #fff; padding: 10px; border-radius: 5px; border: 1px solid #ccc;">
+                                <p style="margin-bottom: 5px; font-weight: bold; font-size: 0.9rem;">Assign Permissions
+                                    / Tab Access:</p>
+                                <div style="display: flex; gap: 15px; flex-wrap: wrap; font-size: 0.9rem;">
+                                    <label><input type="checkbox" id="perm_guestlist" checked> Guest List</label>
+                                    <label><input type="checkbox" id="perm_attendance" checked> Attendance</label>
+                                    <label><input type="checkbox" id="perm_reports" checked> Reports</label>
+                                    <label><input type="checkbox" id="perm_editguest" checked> Edit Guests</label>
+                                </div>
+                            </div>
+                            <h4>Current Authorized Staff</h4>
+                            <div class="table-container" style="margin-top: 10px;">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Staff Name</th>
+                                            <th>Email Account</th>
+                                            <th>Permissions</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="staffListTableBody">
+                                        <!-- Staff List will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 20px; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">System Logs</h3>
+                            <div>
+                                <label for="logUserFilter" style="font-weight: bold; margin-right: 10px;">Filter by
+                                    Staff:</label>
+                                <select id="logUserFilter" onchange="renderActivityLogs()"
+                                    style="padding: 5px; border-radius: 5px; border: 1px solid #ccc;">
+                                    <option value="all">All Staff</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Action Taken</th>
+                                        <th>Staff Name</th>
+                                        <th>Details</th>
+                                        <th>IP Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activityLogsTableBody">
+                                    <!-- Logs will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Message Modal -->
+    <div class="message-modal" id="messageModal">
+        <div class="message-modal-content">
+            <h3 id="messageGuestName">Guest Message</h3>
+            <p id="messageContent" style="margin: 20px 0; line-height: 1.6;"></p>
+            <button class="btn" onclick="closeMessageModal()" style="background-color: var(--secondary);">Close</button>
+        </div>
+    </div>
+
+    <!-- Edit Guest Modal -->
+    <div class="message-modal" id="editGuestModal">
+        <div class="message-modal-content" style="max-width: 600px;">
+            <h3>Edit Guest Details</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; text-align: left;">
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: bold;">First Name</label>
+                    <input type="text" id="editGuestFirstName"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: bold;">Last Name</label>
+                    <input type="text" id="editGuestLastName"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: bold;">Phone Number</label>
+                    <input type="text" id="editGuestPhone"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: bold;">Email</label>
+                    <input type="email" id="editGuestEmail"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: bold;">Additional Guests (Max: 10)</label>
+                    <input type="number" id="editGuestAdditional" min="0" max="10"
+                        onchange="generateEditAdditionalGuestFields()" onkeyup="generateEditAdditionalGuestFields()"
+                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+                </div>
+
+                <div id="editAdditionalGuestsContainer"
+                    style="grid-column: span 2; display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                    <!-- Additional guest fields will be generated here -->
+                </div>
+
+                <div style="grid-column: span 2; margin-top: 10px;">
+                    <label style="font-size: 0.9rem; font-weight: bold;">Days Attending (Check if attending)</label>
+                    <div style="display: flex; gap: 15px; margin-top: 5px;">
+                        <label><input type="checkbox" id="editGuestDay1"> Day 1</label>
+                        <label><input type="checkbox" id="editGuestDay2"> Day 2</label>
+                        <label><input type="checkbox" id="editGuestDay3"> Day 3</label>
+                    </div>
+                </div>
+                <input type="hidden" id="editGuestId">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn" onclick="closeEditGuestModal()"
+                    style="background-color: var(--secondary); width: auto;">Cancel</button>
+                <button class="btn" onclick="saveEditedGuest()"
+                    style="background-color: var(--primary); color: var(--dark); width: auto;">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

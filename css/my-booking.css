@@ -1,0 +1,181 @@
+:root {
+    --primary: #d4af37;
+    --primary-dark: #b5952f;
+    --secondary: #8b7355;
+    --accent: #f5f5f5;
+    --dark: #333;
+    --light: #fff;
+    --text-light: #666;
+    --danger: #dc3545;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--accent);
+    color: var(--dark);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Hide scrollbar for IE, Edge and Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+    display: none;
+}
+
+h1,
+h2 {
+    font-family: 'Playfair Display', serif;
+}
+
+.lookup-container {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+
+.logo {
+    color: var(--primary);
+    font-size: 2rem;
+    text-decoration: none;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 30px;
+    font-family: 'Playfair Display', serif;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+input[type="email"],
+input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+}
+
+button.btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    width: 100%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 10px;
+}
+
+button.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+button.btn-back {
+    background: transparent;
+    color: var(--text-light);
+    border: none;
+    margin-top: 20px;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+
+/* Result Area */
+#itinerary {
+    display: none;
+    margin-top: 30px;
+    text-align: left;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    padding: 20px;
+    background: #fffcf5;
+}
+
+.itinerary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 10px;
+}
+
+.itinerary-row:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.i-label {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.i-val {
+    font-weight: 600;
+    color: var(--dark);
+}
+
+@media (max-width: 480px) {
+    .lookup-container {
+        padding: 25px 20px;
+        margin: 15px;
+        width: calc(100% - 30px);
+    }
+
+    .logo {
+        font-size: 1.2rem;
+        margin-bottom: 20px;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .itinerary-row {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .i-val {
+        margin-top: 2px;
+    }
+}
+
+/* Prevent iOS Safari auto-zoom on input focus */
+input, textarea, select {
+    font-size: 16px !important;
+}

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Celebration | Ronak & Natasha</title>
+    <link rel="icon" type="image/jpeg" href="images/welcome.jpg">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="preload" as="image" href="images/welcome.jpg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            emailjs.init("utqDsBsjZjPnP01Ra");
+        })();
+    </script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        // TODO: Replace with your actual Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOnd3gp0fSkRBlBBg04FDwOn-a1IVwj0g",
+            authDomain: "ronak-s-wedding.firebaseapp.com",
+            projectId: "ronak-s-wedding",
+            storageBucket: "ronak-s-wedding.firebasestorage.app",
+            messagingSenderId: "902091649633",
+            appId: "1:902091649633:web:d4acc3d736d4174ddff020",
+            measurementId: "G-J4VDQL8F51"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expose db to window so other scripts can access it if needed
+        window.db = db;
+        window.firebaseImports = { collection, addDoc, getDoc, getDocs, doc, onSnapshot, query, where };
+    </script>
+    <link rel="stylesheet" href="css/index.css">
+</head>
+
+<body style="overflow: hidden;">
+    <!-- Floating Circles Canvas -->
+    <canvas id="circles-canvas"></canvas>
+
+    <!-- Welcome Splash Screen -->
+    <div id="welcome-splash">
+        <div class="splash-content">
+            <img src="images/welcome.jpg" alt="Welcome to Our Wedding">
+            <h2>Welcome to Our Wedding</h2>
+            <p>Ronak & Natasha</p>
+        </div>
+    </div>
+
+    
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">Ronak & Natasha</a>
+                <button class="hamburger" id="hamburger">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="#our-story">Our Story</a></li>
+                    <li><a href="#event-schedule">Event Schedule</a></li>
+                    <li><a href="travel.html">Travel & Stay</a></li>
+                    <li><a href="#rsvp">RSVP</a></li>
+                    <li><a href="#gallery">Gallery</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="slideshow">
+            <div class="slide active"
+                style="background-image: url('images/hero1.avif'); background-size: cover; background-position: center;">
+            </div>
+            <div class="slide"
+                style="background-image: url('images/hero2.avif'); background-size: cover; background-position: center;">
+            </div>
+            <div class="slide"
+                style="background-image: url('images/hero3.jpg'); background-size: cover; background-position: center;">
+            </div>
+        </div>
+        <!-- Bokeh particle canvas -->
+        <canvas id="bokeh-canvas"></canvas>
+        <div class="hero-content animate-on-scroll">
+            <h1>Ronak & Natasha</h1>
+            <p>We're getting married!</p>
+            <p class="save-date">Save the Date: May 2, 2026</p>
+
+            <div class="countdown-container">
+                <h3>Counting Down to Our Special Day</h3>
+                <table class="countdown-table">
+                    <thead>
+                        <tr>
+                            <th>Days</th>
+                            <th>Hours</th>
+                            <th>Minutes</th>
+                            <th>Seconds</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="days">00</td>
+                            <td id="hours">00</td>
+                            <td id="minutes">00</td>
+                            <td id="seconds">00</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="#rsvp" class="btn">RSVP Now</a>
+        </div>
+    </section>
+
+    <!-- Our Story -->
+    <section id="our-story" class="our-story">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Our Story</h2>
+            <div class="timeline">
+                <div class="timeline-item timeline-left animate-on-scroll">
+                    <div class="timeline-content">
+                        <div class="timeline-date">August 2018</div>
+                        <h3>How We Met</h3>
+                        <p>Ronak and Natasha first met in college during a photography class. Natasha was struggling
+                            with her camera settings, and Ronak, being the photography enthusiast he is, offered to
+                            help. That simple act of kindness sparked a connection.</p>
+                        <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=800"
+                            alt="Camera" class="timeline-image">
+                    </div>
+                </div>
+                <div class="timeline-item timeline-right animate-on-scroll">
+                    <div class="timeline-content">
+                        <div class="timeline-date">March 2020</div>
+                        <h3>Our First Trip</h3>
+                        <p>They dated for five years, creating countless memories together - from hiking adventures in
+                            the mountains to cozy movie nights at home. Their first trip was unforgettable.</p>
+                        <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800"
+                            alt="Mountain Trip" class="timeline-image">
+                    </div>
+                </div>
+                <div class="timeline-item timeline-left animate-on-scroll">
+                    <div class="timeline-content">
+                        <div class="timeline-date">December 2023</div>
+                        <h3>The Proposal</h3>
+                        <p>Ronak proposed during a sunset picnic at their favorite spot overlooking the city, with a
+                            ring that had been in his family for generations. Now, they're excited to begin the next
+                            chapter.</p>
+                        <img src="images/ronakk.jpg" alt="The Proposal" class="timeline-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Event Schedule -->
+    <section id="event-schedule" class="event-schedule">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll" style="margin-bottom: 50px;">Event Schedule</h2>
+            <div class="schedule-tabs animate-on-scroll">
+                <button class="tab-btn active" data-tab="day1">Day 1 - Welcome Dinner</button>
+                <button class="tab-btn" data-tab="day2">Day 2 - Wedding Day</button>
+                <button class="tab-btn" data-tab="day3">Day 3 - Farewell Brunch</button>
+            </div>
+
+            <div class="tab-content active animate-on-scroll" id="day1">
+                <div class="schedule-item">
+                    <h3>Welcome Dinner</h3>
+                    <p class="schedule-time"><i class="far fa-clock"></i> 6:00 PM - 9:00 PM</p>
+                    <p>Join us for an intimate welcome dinner at The Grand Ballroom. This will be a casual gathering
+                        where everyone can mingle and get to know each other before the big day.</p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Location:</strong> The Grand Ballroom, 123 Main Street<br>
+                        <strong>Dress Code:</strong> Cocktail Attire
+                    </p>
+                </div>
+            </div>
+
+            <div class="tab-content animate-on-scroll" id="day2">
+                <div class="schedule-item">
+                    <h3>Wedding Ceremony</h3>
+                    <p class="schedule-time"><i class="far fa-clock"></i> 4:00 PM - 5:00 PM</p>
+                    <p>The main event! Witness our union as we exchange vows in a beautiful garden ceremony. We can't
+                        wait to share this magical moment with you.</p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Location:</strong> Rose Garden, Central Park<br>
+                        <strong>Dress Code:</strong> Formal Attire
+                    </p>
+                </div>
+            </div>
+
+            <div class="tab-content animate-on-scroll" id="day3">
+                <div class="schedule-item">
+                    <h3>Farewell Brunch</h3>
+                    <p class="schedule-time"><i class="far fa-clock"></i> 10:00 AM - 12:00 PM</p>
+                    <p>Join us for a relaxed brunch before we head off on our honeymoon. This is a chance to say goodbye
+                        to everyone and share stories from the wedding.</p>
+                    <p style="margin-bottom: 0;">
+                        <strong>Location:</strong> Garden Terrace, Hotel Luxe<br>
+                        <strong>Dress Code:</strong> Casual
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RSVP Section -->
+    <section id="rsvp" class="rsvp">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">RSVP</h2>
+
+            <!-- Email Status Messages -->
+            <div class="email-status email-loading" id="emailLoading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i> Sending confirmation email...
+            </div>
+
+            <div class="email-status email-success" id="emailSuccess" style="display: none;">
+                <i class="fas fa-check"></i> <span id="emailSuccessText"></span>
+            </div>
+
+            <div class="email-status email-error" id="emailError" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i> <span id="emailErrorText"></span>
+            </div>
+
+            <!-- RSVP Form Container -->
+            <div id="rsvpFormContainer" class="animate-on-scroll">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+
+            <!-- QR Container -->
+            <div class="qr-container animate-on-scroll" id="qr-container" style="display: none;">
+                <h3>Your QR Code</h3>
+                <p id="emailStatusMessage">Please save this QR code. You'll need it for check-in at the event.</p>
+                <div id="qrcode"></div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2 class="section-title animate-on-scroll">Our Gallery</h2>
+            <p style="text-align: center; margin-bottom: 40px; font-size: 1.1rem; color: #666;"
+                class="animate-on-scroll">
+                Capturing our beautiful journey together
+            </p>
+
+            <div class="gallery-grid animate-on-scroll">
+                <div class="gallery-item" onclick="openLightbox(0)">
+                    <img src="images/ronak.JPG">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">Our Engagement</div>
+                        <div class="gallery-description">The magical moment we said yes</div>
+                    </div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox(1)">
+                    <img src="images/ronak.JPG">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">Sunset Walks</div>
+                        <div class="gallery-description">Evening strolls by the beach</div>
+                    </div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox(2)">
+                    <img src="images/ronak.JPG">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">Travel Adventures</div>
+                        <div class="gallery-description">Exploring the world together</div>
+                    </div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox(3)">
+                    <img src="images/ronak.JPG">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">Mountain Getaway</div>
+                        <div class="gallery-description">Hiking adventures in the hills</div>
+                    </div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox(4)">
+                    <img src="images/ronak.JPG" alt="Romantic Dinner">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">Romantic Evenings</div>
+                        <div class="gallery-description">Candlelit dinners and laughter</div>
+                    </div>
+                </div>
+
+                <div class="gallery-item" onclick="openLightbox(5)">
+                    <img src="images/ronak.JPG">
+                    <div class="gallery-overlay">
+                        <div class="gallery-title">City Lights</div>
+                        <div class="gallery-description">Urban adventures and city dreams</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox Modal -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <button class="lightbox-nav lightbox-prev" onclick="changeImage(-1)">‹</button>
+        <div class="lightbox-content">
+            <img class="lightbox-img" id="lightbox-img" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+        </div>
+        <button class="lightbox-nav lightbox-next" onclick="changeImage(1)">›</button>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Information</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Wedding Lane, New York, NY 10001</li>
+                        <li><i class="fas fa-phone"></i> 8200820957</li>
+                        <li><i class="fas fa-envelope"></i> RonakandNatasha2026@example.com</li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="contact-info">
+                        <li><a href="#our-story" style="color: white; text-decoration: none;">Our Story</a></li>
+                        <li><a href="#event-schedule" style="color: white; text-decoration: none;">Event Schedule</a>
+                        </li>
+                        <li><a href="travel.html" style="color: white; text-decoration: none;">Travel & Stay</a></li>
+                        <li><a href="#rsvp" style="color: white; text-decoration: none;">RSVP</a></li>
+                        <li><a href="#gallery" style="color: white; text-decoration: none;">Gallery</a></li>
+                        <li><a href="admin.html" target="_blank" id="admin-link"
+                                style="color: white; text-decoration: none;">Admin</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p> 2026 Ronak & Natasha's Wedding</p>
+            </div>
+        </div>
+    </footer>
+
+    
+
+    <!-- Bokeh Particle Animation -->
+    
+
+    <!-- ===== PHYSICS CIRCLE ANIMATION ===== -->
+    
+
+    <script src="js/index.js"></script>
+</body>
+
+</html>
