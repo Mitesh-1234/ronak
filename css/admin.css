@@ -1100,3 +1100,85 @@
         input, textarea, select {
             font-size: 16px !important;
         }
+
+        /* ========== LAST VISIT & STAFF ID BADGE ========== */
+        .sidebar-user-info {
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .staff-id-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            color: #d4af37;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-family: monospace;
+            text-align: center;
+            width: fit-content;
+            margin: 0 auto;
+        }
+
+        .last-visit-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #aaa;
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-align: center;
+            width: fit-content;
+            margin: 0 auto;
+            white-space: nowrap;
+        }
+
+        .last-visit-badge i,
+        .staff-id-badge i {
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+
+        /* Login History section in Activity Logs */
+        .login-history-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f7ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .login-history-section h3 {
+            margin-bottom: 15px;
+            color: #1565c0;
+        }
+
+        .role-badge-master {
+            background: linear-gradient(135deg, #d4af37, #b8960c);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .role-badge-staff {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            white-space: nowrap;
+        }

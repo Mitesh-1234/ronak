@@ -100,9 +100,29 @@
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
                     <h1>Admin Panel</h1>
-                    <div
-                        style="font-size: 0.85rem; color: #666; margin-top: 5px; margin-bottom: 15px; text-align: center; background: #f0f0f0; padding: 5px; border-radius: 5px;">
-                        Logged in as: <strong id="sidebarStaffNameDisplay" style="color: var(--primary);"></strong>
+                    <div id="sidebarUserBox"
+                        style="font-size: 0.85rem; color: #666; margin-top: 5px; margin-bottom: 15px; text-align: center; background: #f0f0f0; padding: 8px 10px 10px; border-radius: 8px;">
+                        <div style="margin-bottom: 5px;">Logged in as: <strong id="sidebarStaffNameDisplay"
+                                style="color: var(--primary);"></strong></div>
+                        <div id="sidebarStaffIdBadge"
+                            style="display:none; font-family:monospace; font-weight:700; font-size:0.78rem; color:var(--primary); letter-spacing:0.5px; margin-bottom:4px;">
+                            <i class="fas fa-id-badge"></i> <span id="sidebarStaffIdText"></span>
+                        </div>
+                        <div id="sidebarLastVisitBadge"
+                            style="display:none; font-size:0.75rem; color:#888; margin-bottom:5px;">
+                            <i class="fas fa-clock"></i> <span id="sidebarLastVisitText">No previous visit</span>
+                        </div>
+                        <!-- Collapsible login history -->
+                        <div id="loginHistoryToggleWrap" style="display:none;">
+                            <span id="loginHistoryToggle" onclick="toggleLoginHistory()"
+                                style="font-size:0.72rem; color:var(--primary); cursor:pointer; text-decoration:underline;">
+                                <i class="fas fa-history"></i> View login history
+                            </span>
+                            <div id="loginHistoryList"
+                                style="display:none; margin-top:6px; text-align:left; font-size:0.72rem; color:#555; border-top:1px solid #ddd; padding-top:6px; max-height:200px; overflow-y:auto;">
+                                <!-- populated by JS -->
+                            </div>
+                        </div>
                     </div>
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -147,7 +167,8 @@
                     <li id="nav-logs" style="display: none;"><a href="#" data-tab="logs"><i
                                 class="fas fa-shield-alt"></i> Activity Logs</a></li>
                     <li class="logout-sidebar">
-                        <a href="#" onclick="logout()" style="background: var(--danger); margin-top: 5px;">
+                        <a href="#" onclick="logout(); return false;"
+                            style="background: var(--danger); margin-top: 5px;">
                             <i class="fas fa-sign-out-alt"></i> Logout
                         </a>
                     </li>
@@ -556,6 +577,7 @@
                         <p style="margin-bottom: 20px; color: #555;">Please enter the Master Admin PIN to view activity
                             logs.</p>
                         <input type="password" id="masterPinInput" placeholder="••••"
+                            onkeypress="if(event.key === 'Enter') verifyMasterPin()"
                             style="font-size: 24px; padding: 10px; width: 150px; text-align: center; letter-spacing: 5px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 20px;">
                         <br>
                         <button class="btn" onclick="verifyMasterPin()" style="width: auto; padding: 10px 30px;">Verify
@@ -569,6 +591,7 @@
                         <p style="margin-bottom: 20px; color: #555;">A 6-digit code has been sent to the Master Email
                             Address.</p>
                         <input type="text" id="masterOtpInput" placeholder="123456"
+                            onkeypress="if(event.key === 'Enter') verifyMasterOTP()"
                             style="font-size: 24px; padding: 10px; width: 200px; text-align: center; letter-spacing: 5px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 20px;">
                         <br>
                         <button class="btn" onclick="verifyMasterOTP()" style="width: auto; padding: 10px 30px;">Verify
@@ -581,6 +604,23 @@
                             onclick="sessionStorage.removeItem('master_unlocked'); if(typeof activityLogsUnsubscribe === 'function') activityLogsUnsubscribe(); document.getElementById('logsDataArea').style.display='none'; document.getElementById('pinVerificationArea').style.display='block'; document.getElementById('masterPinInput').value=''; document.getElementById('masterOtpInput').value='';"
                             style="background:var(--danger); width:auto; margin-top:10px;"><i class="fas fa-lock"></i>
                             Re-Lock Session</button>
+
+                        <!-- Activity Logs Last Accessed info -->
+                        <div id="activityLogAccessBox"
+                            style="display:none; background:#fff3cd; color:#856404; padding:12px 15px; border-radius:8px 8px 8px 8px; border:1px solid #ffeaa7; margin-top:20px; font-size:0.9rem; font-weight:600; align-items:center; gap:10px; z-index: 10; position: relative;">
+                            <i class="fas fa-shield-alt" style="font-size:1.1rem; display:inline-block"></i>
+                            <span id="activityLogAccessText" style="flex:1;">Loading last access info...</span>
+                            <button id="activityLogHistoryToggle" onclick="toggleActivityLogHistory()"
+                                style="display:none; margin-left:10px; background:none; border:none; cursor:pointer; color:#856404; font-weight:bold; font-size:0.85rem;"><i
+                                    class="fas fa-history"></i> View History</button>
+                        </div>
+                        <div id="activityLogHistoryWrap"
+                            style="display:none; background:#fff; border:1px solid #ffeaa7; border-top:none; border-radius: 0 0 8px 8px; padding:10px 15px; margin-top:-5px; position:relative; z-index:5;">
+                            <div id="activityLogHistoryList"
+                                style="max-height: 150px; overflow-y: auto; font-size: 0.85rem; color:#666;">
+                                <!-- History items -->
+                            </div>
+                        </div>
 
                         <!-- Staff Management -->
                         <div
@@ -611,10 +651,11 @@
                                 </div>
                             </div>
                             <h4>Current Authorized Staff</h4>
-                            <div class="table-container" style="margin-top: 10px;">
+                            <div class="table-container" style="margin-top: 10px; max-height: 300px; overflow-y: auto;">
                                 <table>
-                                    <thead>
+                                    <thead style="position: sticky; top: 0; background: var(--dark); z-index: 10;">
                                         <tr>
+                                            <th>Staff ID</th>
                                             <th>Staff Name</th>
                                             <th>Email Account</th>
                                             <th>Permissions</th>
@@ -656,6 +697,7 @@
                                 </tbody>
                             </table>
                         </div>
+
                     </div>
                 </div>
             </main>
@@ -727,8 +769,8 @@
         </div>
     </div>
 
-    
-    <script src="js/admin.js"></script>
+
+    <script src="js/admin.js?v=3"></script>
 </body>
 
 </html>

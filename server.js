@@ -44,7 +44,7 @@ app.use(helmet({
             scriptSrcAttr: ["'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
             fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "https://cdn.jsdelivr.net"],
-            imgSrc: ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://*.google.com", "https://*.googleapis.com", "https://image2url.com"],
+            imgSrc: ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://*.google.com", "https://*.googleapis.com", "https://image2url.com", "https://quickchart.io", "https://api.qrserver.com"],
             connectSrc: ["'self'", "https://*.googleapis.com", "https://*.firebaseio.com", "wss://*.firebaseio.com", "https://api.emailjs.com", "https://api.ipify.org", "https://cdn.jsdelivr.net"],
             frameSrc: ["'self'", "https://*.firebaseapp.com", "https://*.google.com"],
         },
@@ -104,7 +104,7 @@ app.post('/api/rsvp', rsvpLimiter, async (req, res) => {
 
         // Generate ID and Timestamp securely on the backend
         const rsvp_id = 'RSVP-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-        
+
         // Prepare safe data for Firestore
         const safeData = {
             ...validatedData,
@@ -117,20 +117,20 @@ app.post('/api/rsvp', rsvpLimiter, async (req, res) => {
         await db.collection('guests').add(safeData);
 
         // Return success response to frontend
-        return res.status(200).json({ 
-            success: true, 
+        return res.status(200).json({
+            success: true,
             message: 'RSVP successfully saved',
             rsvp_id: rsvp_id
         });
 
     } catch (error) {
         console.error('RSVP Submission Error:', error);
-        
+
         // Handle Zod Validation Errors
         if (error instanceof z.ZodError) {
-            return res.status(400).json({ 
-                error: 'Invalid input data', 
-                details: error.errors 
+            return res.status(400).json({
+                error: 'Invalid input data',
+                details: error.errors
             });
         }
 
